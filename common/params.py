@@ -79,6 +79,8 @@ keys = {
   "LimitSetSpeed": TxType.PERSISTENT,
 
   "RecordFront": TxType.PERSISTENT,
+# read: loggerd (uploader)
+  "AvoidUploadSSIDs": TxType.PERSISTENT,
 }
 
 def fsync_dir(path):
