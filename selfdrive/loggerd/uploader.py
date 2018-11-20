@@ -69,12 +69,31 @@ def is_on_wifi():
   try:
     # TODO: figure out why the android service call sometimes dies with SIGUSR2 (signal from MSGQ)
     result = android.parse_service_call_string(android.service_call(["connectivity", "2"]))
-    if result is None:
-      return True
-    return 'WIFI' in result
   except Exception:
     cloudlog.exception("is_on_wifi failed")
     return False
+
+  flag = "WIFI" in result
+  if not flag:
+    return False
+
+  # get SSID(English only) and check with avoid list in "avoidUploadSSIDs"
+  ssid = ""
+  for ch in result:
+    if flag:
+      if ch == '"':
+        flag = False
+      continue
+    if ord(ch) != 0:
+      if ch == '"':
+        break
+      ssid += ch
+
+  params = Params()
+  avoidUploadSSIDs = params.get("AvoidUploadSSIDs", encoding='utf8')
+  if ssid in avoidUploadSSIDs:
+    return False
+  return True
 
 def is_on_hotspot():
   try:
